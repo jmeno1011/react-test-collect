@@ -1,0 +1,12 @@
+.in-title {
+  margin: 1rem;
+  font-size: 1.5rem;
+}
+.form {
+  margin: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+label {
+  margin-bottom: 10px;
+}
