@@ -19,7 +19,7 @@ function Login() {
         url: "http://localhost:8888/login",
         data: { id: id, pw: pw },
       }).then((res) => {
-        console.log(res);
+        console.log(res.data);
       });
     }
   };

@@ -11,10 +11,17 @@ const saltRounds = 10;
 const jwt = require("jsonwebtoken");
 const app = express();
 const PORT = 8888;
+const ACCESS_TOKEN_SECRET = "JWT-SECRET";
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+// process.env.ACCESS_TOKEN_SECRET을 secretOrPrivateKey으로 사용
+const generateAccessToken = (id) => {
+  //jwt.sign(payload, secretOrPrivateKey, [options, callback])
+  return jwt.sign({ id }, ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
+};
 
 app.get("/", (req, res) => {
   db.query("select 1", (err, result) => {
@@ -40,8 +47,9 @@ app.post("/sign-up", (req, res) => {
   db.query(insert_info, (err, result) => {
     if (err) {
       console.log(err);
+      return res.sendStatus(500);
     }
-    console.log(`sign-up ${id}`);
+    let accessToken = console.log(`sign-up ${id}`);
   });
 });
 
@@ -53,7 +61,9 @@ app.post("/login", (req, res) => {
     if (err) {
       console.log(err);
     }
+    let accessToken = generateAccessToken(id);
     console.log("login!");
+    return res.status(200).send({ accessToken: accessToken });
   });
 });
 
