@@ -12,11 +12,11 @@ function Join() {
   };
   const signUp = (e) => {
     e.preventDefault();
-    axios({
-      method: "post",
-      url: "http://localhost:8888/sign-up",
-      data: { id: id, pw: pw },
-    }).then((res) => {
+    const data = {
+      id: id,
+      pw: pw,
+    };
+    axios.post("/sign-up", data).then((res) => {
       console.log(res);
     });
   };

@@ -1,10 +1,12 @@
 import axios from "axios";
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./account.css";
 
-function Login() {
+function Login(props) {
   const [id, setId] = useState("");
   const [pw, setPw] = useState("");
+  let navigate = useNavigate();
   const onChangeId = (e) => {
     setId(e.target.value);
   };
@@ -14,13 +16,23 @@ function Login() {
   const onSubmitHandle = (e) => {
     e.preventDefault();
     if (id !== "" && pw !== "") {
-      axios({
-        method: "post",
-        url: "http://localhost:8888/login",
-        data: { id: id, pw: pw },
-      }).then((res) => {
-        console.log(res.data);
-      });
+      const data = {
+        id: id,
+        pw: pw,
+      };
+      axios
+        .post("/login", data)
+        .then((res) => {
+          const { accessToken } = res.data;
+          console.log(accessToken);
+          axios.defaults.headers.common[
+            "Authorization"
+          ] = `meno ${accessToken}`;
+          navigate("/");
+        })
+        .catch((e) => {
+          return console.log(("ERROR : ", e));
+        });
     }
   };
   return (

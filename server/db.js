@@ -7,6 +7,4 @@ const db = mysql.createConnection({
   database: "opentutorials",
 });
 
-console.log("db connect");
-
 module.exports = db;

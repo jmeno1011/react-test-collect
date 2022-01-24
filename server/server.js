@@ -9,27 +9,27 @@ const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
 const jwt = require("jsonwebtoken");
+const { refererCheck } = require("./refererCheck");
 const app = express();
-const PORT = 8888;
+const PORT = 8008;
 const ACCESS_TOKEN_SECRET = "JWT-SECRET";
 
-app.use(cors());
+let corsOption = {
+  origin: "http://localhost:3000",
+  credentials: true,
+};
+
+app.use(cors(corsOption));
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(cookieParser());
 
 // process.env.ACCESS_TOKEN_SECRET을 secretOrPrivateKey으로 사용
 const generateAccessToken = (id) => {
   //jwt.sign(payload, secretOrPrivateKey, [options, callback])
   return jwt.sign({ id }, ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
 };
-
-app.get("/", (req, res) => {
-  db.query("select 1", (err, result) => {
-    console.log(result);
-  });
-});
-
-// app.get("/sign-up", (req, res));
 
 app.post("/sign-up", (req, res) => {
   const id = req.body.id;
@@ -56,6 +56,8 @@ app.post("/sign-up", (req, res) => {
 app.post("/login", (req, res) => {
   const id = req.body.id;
   const pw = req.body.pw;
+  const referer = req.headers.referer;
+  console.log("referer : ", referer);
   const select_info = `select * from jwt_test_table where id='${id}' and password='${pw}'`;
   db.query(select_info, (err, result) => {
     if (err) {
@@ -63,10 +65,24 @@ app.post("/login", (req, res) => {
     }
     let accessToken = generateAccessToken(id);
     console.log("login!");
+    console.log(accessToken);
+    res.cookie("aT", accessToken, { maxAge: 30000 });
     return res.status(200).send({ accessToken: accessToken });
   });
 });
 
+app.get("/login-check", (req, res, next) => {
+  return res.status(200).send({
+    aT: req.cookies["aT"],
+    msg: "success",
+  });
+});
+
+app.get("/logout", (req, res, next) => {
+  res.clearCookie("aT");
+  return res.status(200).send({ msg: "cookie delete" });
+});
+
 app.listen(PORT, () => {
-  console.log("server open");
+  console.log(`server open PORT :${PORT}`);
 });

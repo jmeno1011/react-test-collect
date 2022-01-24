@@ -1,11 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./index.css";
 import Login from "./components/account/Login";
 import Join from "./components/account/Join";
+import axios from "axios";
+import Logout from "./components/account/Logout";
 
+axios.defaults.baseURL = "http://localhost:8008";
+axios.defaults.withCredentials = true;
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
@@ -13,6 +17,7 @@ ReactDOM.render(
         <Route path="/" element={<App />}>
           <Route path="login" element={<Login />} />
           <Route path="sign-up" element={<Join />} />
+          <Route path="logout" element={<Logout />} />
         </Route>
       </Routes>
     </BrowserRouter>
